@@ -1,1 +1,2 @@
 # sitescope-ai
+SiteScope AI is an open-source web application that performs a technical audit (covering performance, SEO, accessibility, and best practices) on a given URL using Google PageSpeed ​​Insights/Lighthouse; it then uses AI to transform the raw technical data into clear explanations of issues and concrete recommendations for fixes. The goal is to create a tool that the developer can use in their own freelance web design practice on client websites.
