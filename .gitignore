@@ -139,6 +139,7 @@ backend/venv/
 ENV/
 env.bak/
 venv.bak/
+notes-developer.txt
 
 # Spyder project settings
 .spyderproject

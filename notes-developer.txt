@@ -1,0 +1,1 @@
+command to run backend: uvicorn backend.main:app --reload
