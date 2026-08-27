@@ -1,4 +1,3 @@
-# main.py
 import os
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -26,11 +25,9 @@ def read_root():
 
 @app.post("/api/audit")
 async def audit_website(request: AuditRequest):
-    params = {
-        "url": request.url,
-        "key": PAGESPEED_API_KEY,
-        "category": CATEGORIES,
-    }
+    params = [("url", request.url), ("key", PAGESPEED_API_KEY)]
+    for cat in CATEGORIES:
+        params.append(("category", cat))
 
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.get(PAGESPEED_URL, params=params)
