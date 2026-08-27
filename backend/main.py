@@ -18,27 +18,7 @@ class AuditRequest(BaseModel):
     url: str
 
 
-@app.get("/")
-def read_root():
-    return {"status": "SiteScope AI backend is running..."}
-
-
-@app.post("/api/audit")
-async def audit_website(request: AuditRequest):
-    params = [("url", request.url), ("key", PAGESPEED_API_KEY)]
-    for cat in CATEGORIES:
-        params.append(("category", cat))
-
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.get(PAGESPEED_URL, params=params)
-
-    if response.status_code != 200:
-        raise HTTPException(
-            status_code=response.status_code,
-            detail=f"PageSpeed API returned error: {response.text}",
-        )
-
-    data = response.json()
+def simplify_pagespeed_response(data: dict) -> dict:
     lighthouse = data.get("lighthouseResult", {})
 
     categories_raw = lighthouse.get("categories", {})
@@ -61,8 +41,28 @@ async def audit_website(request: AuditRequest):
                 "displayValue": audit.get("displayValue"),
             })
 
-    return {
-        "url": request.url,
-        "scores": scores,
-        "opportunities": opportunities,
-    }
+    return {"scores": scores, "opportunities": opportunities}
+
+
+@app.get("/")
+def read_root():
+    return {"status": "SiteScope AI backend is running..."}
+
+
+@app.post("/api/audit")
+async def audit_website(request: AuditRequest):
+    params = [("url", request.url), ("key", PAGESPEED_API_KEY)]
+    for cat in CATEGORIES:
+        params.append(("category", cat))
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        response = await client.get(PAGESPEED_URL, params=params)
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"PageSpeed API returned error: {response.text}",
+        )
+
+    result = simplify_pagespeed_response(response.json())
+    return {"url": request.url, **result}
