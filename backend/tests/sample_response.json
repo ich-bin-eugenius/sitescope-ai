@@ -1,0 +1,21 @@
+{
+  "lighthouseResult": {
+    "categories": {
+      "performance": {
+        "score": 0.85
+      },
+      "seo": {
+        "score": 0.92
+      }
+    },
+    "audits": {
+      "render-blocking-resources": {
+        "id": "render-blocking-resources",
+        "title": "Eliminate render-blocking resources",
+        "description": "Javasript and CSS are blocking rendering",
+        "score": 0.5,
+        "displayValue": "150 ms"
+      }
+    }
+  }
+}
