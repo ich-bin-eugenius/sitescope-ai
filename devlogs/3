@@ -1,0 +1,151 @@
+DEVLOG #3 — Parsing, Error Handling & First Frontend
+
+After getting the first working PageSpeed API integration in the previous devlog, today I focused on making the backend more useful and reliable.
+
+The main goal was to stop returning the entire PageSpeed response and instead extract only the information SiteScope AI actually needs.
+
+1. PageSpeed response parsing
+
+The PageSpeed Insights API returns a large JSON response containing many different sections and values.
+
+I created simplify_pagespeed_response() to process this response.
+
+The function currently extracts:
+
+Category scores
+Performance
+SEO
+Accessibility
+Best Practices
+
+The Lighthouse API returns scores as values between 0 and 1, so I convert them to a 0–100 scale.
+
+For example:
+
+{
+  "performance": 100,
+  "accessibility": 96,
+  "best-practices": 96,
+  "seo": 80
+}
+Audit opportunities
+
+From the Lighthouse audits section, I extract audits where the score indicates that there is something to improve.
+
+Each opportunity contains:
+
+{
+  "id": "...",
+  "title": "...",
+  "description": "...",
+  "severity": "...",
+  "displayValue": "..."
+}
+
+This makes the response much smaller and easier for the frontend and future AI processing to work with.
+
+2. Severity classification
+
+I also added a simple severity classification based on the Lighthouse audit score.
+
+Current thresholds:
+
+score < 0.5  → critical
+score < 0.9  → warning
+score >= 0.9 → minor
+
+The opportunities are then sorted by severity so the most important problems appear first.
+
+This is only an initial classification system. Later I may replace or improve it depending on how SiteScope AI evaluates different types of issues.
+
+3. Error handling
+
+A working API integration also needs to handle situations where something goes wrong.
+
+I added handling for several possible failures:
+
+PageSpeed API timeout
+Connection errors
+Other HTTP/network request errors
+Invalid or inaccessible websites
+PageSpeed API rate limits
+Unexpected API status codes
+Invalid JSON responses
+
+Instead of allowing the backend to crash, the API now returns an appropriate HTTP error response with a human-readable message.
+
+For example, a timeout returns HTTP 504, while a rate-limit response returns HTTP 429.
+
+4. Testing the endpoint
+
+I tested the backend locally using curl.
+
+Example request:
+
+curl.exe -X POST http://127.0.0.1:8000/api/audit \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://example.com"}'
+
+The endpoint successfully returned a simplified audit response containing the website URL, category scores and detected opportunities.
+
+This confirmed that the basic pipeline is working:
+
+URL
+ ↓
+FastAPI
+ ↓
+PageSpeed Insights API
+ ↓
+Lighthouse response
+ ↓
+SiteScope AI parser
+ ↓
+Simplified JSON
+5. Starting the frontend
+
+I also started working on the frontend.
+
+The first version contains:
+
+Basic HTML structure
+URL input
+Audit button
+Initial CSS styling
+Space Grotesk font
+
+The frontend is still very basic, but the initial layout is now in place.
+
+The next important step is connecting the frontend form to:
+
+POST /api/audit
+
+so the entire audit can be started directly from the browser.
+
+Commits
+
+Today's work included several commits covering:
+
+Severity categorization
+Robust API exception handling
+Documentation of the parser
+Frontend layout
+Initial CSS theme
+Space Grotesk font
+Devlog file naming fixes
+Current state
+
+SiteScope AI can now:
+
+Accept a website URL
+        ↓
+Send it to PageSpeed Insights
+        ↓
+Receive Lighthouse data
+        ↓
+Extract useful information
+        ↓
+Classify detected issues
+        ↓
+Return a clean JSON response
+
+The project is starting to become an actual working application rather than just an API experiment.
