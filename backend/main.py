@@ -19,6 +19,7 @@ class AuditRequest(BaseModel):
 
 
 def score_to_severity(score: float) -> str:
+    """Converts numerical Lighthouse score to human-readable severity level."""
     if score < 0.5:
         return "critical"
     elif score < 0.9:
@@ -63,18 +64,55 @@ def read_root():
 
 @app.post("/api/audit")
 async def audit_website(request: AuditRequest):
-    params = [("url", str(request.url)), ("key", PAGESPEED_API_KEY)]
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
+    url_str = str(request.url)
+    params = [("url", url_str), ("key", PAGESPEED_API_KEY)]
     for cat in CATEGORIES:
         params.append(("category", cat))
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.get(PAGESPEED_URL, params=params)
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.get(PAGESPEED_URL, params=params)
 
+    except httpx.TimeoutException:
+        raise HTTPException(
+            status_code=504,
+            detail=f"The analyze of the website {url_str} took to long and timed out. Please try again.",
+        )
+    except httpx.ConnectError:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to connect to the PageSpeed API. Check your internet connection.",
+        )
+    except httpx.RequestError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Error communicating with the PageSpeed API: {str(e)}",
+        )
+    except response.status_code == 400:
+        raise HTTPException(
+            status_code=400,
+            detail=f"The website {url_str} could not be analyzed — check that the URL is valid and the website is "
+                   f"publicly accessible.",
+        )
+    except response.status_code == 429:
+        raise HTTPException(
+            status_code=429,
+            detail=f"The PageSpeed API daily limit has been reached. Please try again tomorrow.",
+        )
     if response.status_code != 200:
         raise HTTPException(
-            status_code=response.status_code,
-            detail=f"PageSpeed API returned error: {response.text}",
+            status_code=502,
+            detail=f"The PageSpeed API returned an unexpected error. (code {response.status_code}).",
         )
 
-    result = simplify_pagespeed_response(response.json())
-    return {"url": str(request.url), **result}
+    try:
+        data = response.json()
+    except ValueError:
+        raise HTTPException(
+            status_code=502,
+            detail="The PageSpeed API returned invalid data.",
+        )
+
+    result = simplify_pagespeed_response(data)
+    return {"url": url_str, **result}
