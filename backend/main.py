@@ -29,6 +29,7 @@ def score_to_severity(score: float) -> str:
 
 
 def simplify_pagespeed_response(data: dict) -> dict:
+    """It extracts only the category scores and audits with a score < 1 from the full PageSpeed API response."""
     lighthouse = data.get("lighthouseResult", {})
 
     categories_raw = lighthouse.get("categories", {})
