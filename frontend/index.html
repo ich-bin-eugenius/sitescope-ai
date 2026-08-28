@@ -2,9 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sitescope AI</title>
+    <meta name="viewport" content="width=device-device, initial_scale=1.0">
+    <title>SiteScope AI</title>
+    <!-- Import font Inter from Google Fonts-->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Connecting index.html with style.css -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Navbar
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Author</a>
+        <a href="#">Links</a>
+     </nav>
+    -->
 
+    <main class="hero-container">
+        <!-- Headline -->
+        <h1 class="brand-title">SiteScope AI</h1>
+
+        <!-- Form for entering a URL and launching an audit -->
+        <form class="audit-form">
+            <input type="url" placeholder="Enter your url" required class="url-input">
+            <button type="submit" class="submit-button">
+                Start Audit
+            </button>
+        </form>
+    </main>
 </body>
 </html>
