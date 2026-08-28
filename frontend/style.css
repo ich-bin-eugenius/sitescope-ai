@@ -1,0 +1,135 @@
+/* Clean layout margins and padding tracking across all items */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Centered global wrapper layout */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #fafafa;
+    color: #1e293b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Header link placement */
+.navbar {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 24px;
+    gap: 32px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s ease;
+}
+
+.navbar a:hover {
+    color: #2563eb;
+}
+
+/* Rounded border design for individual menu elements */
+.nav-button {
+    border: 2px solid #cbd5e1;
+    padding: 8px 18px;
+    border-radius: 20px;
+}
+
+.nav-button:hover {
+    border-color: #2563eb;
+    background-color: #f1f5f9;
+}
+
+
+/* Core landing page placement constraints */
+.hero-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    margin-top: -80px;
+}
+
+/* Custom text tracking setup for brand presentation */
+.brand-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 40px;
+    text-transform: none;
+
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Central user action layout alignment */
+.audit-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 480px;
+}
+
+/* User URL capture presentation boundaries */
+.url-input {
+    width: 100%;
+    padding: 16px 28px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    border: 2px solid #cbd5e1;
+    border-radius: 50px;
+    outline: none;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Visual change triggered during active input states */
+.url-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Trigger command actions interface layout */
+.submit-button {
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 16px 36px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.submit-button:hover {
+    background-color: #1e293b;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Minor responsive changes on immediate pointer input down interaction */
+.submit-button:active {
+    transform: scale(0.97);
+}
