@@ -1,7 +1,7 @@
 import os
 import httpx
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +15,16 @@ CATEGORIES = ["performance", "seo", "accessibility", "best-practices"]
 
 
 class AuditRequest(BaseModel):
-    url: str
+    url: HttpUrl
+
+
+def score_to_severity(score: float) -> str:
+    if score < 0.5:
+        return "critical"
+    elif score < 0.9:
+        return "warning"
+    else:
+        return "minor"
 
 
 def simplify_pagespeed_response(data: dict) -> dict:
@@ -37,9 +46,12 @@ def simplify_pagespeed_response(data: dict) -> dict:
                 "id": audit.get("id"),
                 "title": audit.get("title"),
                 "description": audit.get("description"),
-                "score": score,
+                "severity": score_to_severity(score),
                 "displayValue": audit.get("displayValue"),
             })
+
+    severity_order = {"critical": 0, "warning": 1, "minor": 2}
+    opportunities.sort(key=lambda o: severity_order[o["severity"]])
 
     return {"scores": scores, "opportunities": opportunities}
 
@@ -51,7 +63,7 @@ def read_root():
 
 @app.post("/api/audit")
 async def audit_website(request: AuditRequest):
-    params = [("url", request.url), ("key", PAGESPEED_API_KEY)]
+    params = [("url", str(request.url)), ("key", PAGESPEED_API_KEY)]
     for cat in CATEGORIES:
         params.append(("category", cat))
 
@@ -65,4 +77,4 @@ async def audit_website(request: AuditRequest):
         )
 
     result = simplify_pagespeed_response(response.json())
-    return {"url": request.url, **result}
+    return {"url": str(request.url), **result}
