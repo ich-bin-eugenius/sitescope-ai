@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-device, initial_scale=1.0">
-    <title>SiteScope AI</title>
+    <title>Site Scope AI</title>
     <!-- Import font Space Grotesk from Google Fonts-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,12 +26,18 @@
         <h1 class="brand-title">SiteScope AI</h1>
 
         <!-- Form for entering a URL and launching an audit -->
-        <form class="audit-form">
-            <input type="url" placeholder="Enter your url" required class="url-input">
+        <form id="audit-form" class="audit-form">
+            <input type="url" id="url-input" placeholder="Enter your url" required class="url-input">
             <button type="submit" class="submit-button">
                 Start Audit
             </button>
         </form>
+
+        <!-- Container for results that JS is waiting for -->
+        <div id="results-container" style="margin-top: 30px; width: 100%; max-width: 600px; text-align: left;"></div>
     </main>
+
+    <!-- Connecting index.html with script.js -->
+    <script src="script.js"></script>
 </body>
 </html>
