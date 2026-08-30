@@ -3,10 +3,19 @@ import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 PAGESPEED_API_KEY = os.getenv("PAGESPEED_API_KEY")
 PAGESPEED_URL = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
