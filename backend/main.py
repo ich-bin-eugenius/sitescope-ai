@@ -9,6 +9,7 @@ load_dotenv()
 
 app = FastAPI()
 
+# noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # for development
