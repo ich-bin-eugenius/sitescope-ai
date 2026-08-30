@@ -20,11 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ url: targetUrl }),
             });
 
-            if (!response.ok) {
-                throw new Error('The server returned an error, or the audit could not be performed.');
-            }
-
             const data = await response.json();
+
+            if (!response.ok) {
+                const message = Array.isArray(data.detail)
+                    ? data.detail.map(d => d.msg).join(', ')
+                    : (data.detail || 'The server returned an unknown error.');
+                throw new Error(message);
+            }
 
             resultsContainer.innerHTML = `
                 <h3>Audit results:</h3>

@@ -87,33 +87,34 @@ async def audit_website(request: AuditRequest):
     except httpx.TimeoutException:
         raise HTTPException(
             status_code=504,
-            detail=f"The analyze of the website {url_str} took to long and timed out. Please try again.",
+            detail=f"The analysis of the website {url_str} took too long and timed out. Please try again.",
         )
     except httpx.ConnectError:
         raise HTTPException(
             status_code=502,
-            detail=f"Failed to connect to the PageSpeed API. Check your internet connection.",
+            detail="Failed to connect to the PageSpeed API. Check your internet connection.",
         )
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=502,
             detail=f"Error communicating with the PageSpeed API: {str(e)}",
         )
-    except response.status_code == 400:
+
+    if response.status_code == 400:
         raise HTTPException(
             status_code=400,
-            detail=f"The website {url_str} could not be analyzed — check that the URL is valid and the website is "
+            detail=f"The website {url_str} could not be analyzed, check that the URL is valid and the website is "
                    f"publicly accessible.",
         )
-    except response.status_code == 429:
+    elif response.status_code == 429:
         raise HTTPException(
             status_code=429,
-            detail=f"The PageSpeed API daily limit has been reached. Please try again tomorrow.",
+            detail="The PageSpeed API daily limit has been reached. Please try again tomorrow.",
         )
-    if response.status_code != 200:
+    elif response.status_code != 200:
         raise HTTPException(
             status_code=502,
-            detail=f"The PageSpeed API returned an unexpected error. (code {response.status_code}).",
+            detail=f"The PageSpeed API returned an unexpected error (code {response.status_code}).",
         )
 
     try:
