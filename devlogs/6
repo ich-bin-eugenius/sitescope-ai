@@ -1,0 +1,7 @@
+# DEVLOG #6 — Frontend & PageSpeed API
+
+Today I made a major step forward with the frontend and improved its overall design and usability.
+
+I also fixed an issue with the PageSpeed API quota. The problem wasn't the quota itself, but how I was starting the FastAPI backend — running it from the wrong directory caused the API configuration to behave incorrectly.
+
+The frontend took more time than the tracked 2 hours since I didn't log some of the previous work.

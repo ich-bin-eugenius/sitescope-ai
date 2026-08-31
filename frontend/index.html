@@ -1,44 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="SiteScope AI analyzes your website's performance, SEO, and accessibility using Google Lighthouse and provides AI-generated explanations on how to improve the results.">
-    <meta name="viewport" content="width=device-device, initial_scale=1.0">
-    <title>Site Scope AI</title>
-    <!-- Import font Space Grotesk from Google Fonts-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    <!-- Connecting index.html with style.css -->
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SiteScope AI — Instant Website Audits</title>
+    <meta name="description" content="Drop in any URL and get an instant audit of its SEO, performance, accessibility, and best practices — with a score and fixes." />
+    <meta property="og:title" content="SiteScope AI — Instant Website Audits" />
+    <meta property="og:description" content="Drop in any URL and get an instant audit of its SEO, performance, accessibility, and best practices." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Navbar
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Author</a>
-        <a href="#">Links</a>
-     </nav>
-    -->
+    <div class="page">
+        <div class="overlay"></div>
+        <main class="container">
+            <!-- Header -->
+            <div class="badge">
+                <svg class="icon icon-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+                <span>Hack Club & Stardance</span>
+            </div>
 
-    <main class="hero-container">
-        <!-- Headline -->
-        <h1 class="brand-title">SiteScope AI</h1>
+            <h1 class="title text-glow">
+                <span class="text-primary">Site</span><span>Scope</span>
+                <span class="text-primary">AI</span>
+            </h1>
+            <p class="subtitle">
+                Drop in any URL. Get a real audit of its SEO, performance,
+                accessibility, and best practices — in seconds.
+            </p>
 
-        <!-- Form for entering a URL and launching an audit -->
-        <form id="audit-form" class="audit-form">
-            <input type="url" id="url-input" placeholder="Enter your url" required class="url-input">
-            <button type="submit" class="submit-button">
-                Start Audit
-            </button>
-        </form>
+            <!-- Input -->
+            <form id="audit-form" class="form">
+                <div class="input-wrap">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    <input id="url-input" type="text" placeholder="Enter a URL - e.g. example.com" autocomplete="off" />
+                </div>
+                <button id="submit-btn" type="submit" class="btn-primary">Start Audit</button>
+            </form>
 
-        <!-- Container for results that JS is waiting for -->
-        <div id="results-container" style="margin-top: 30px; width: 100%; max-width: 600px; text-align: left;"></div>
+            <p id="error" class="error hidden"></p>
+
+            <!-- Scanning state -->
+            <div id="scanning" class="scanning hidden">
+                <div class="scan-bar"><div class="scan-bar-inner"></div></div>
+                <div id="scan-lines" class="scan-lines"></div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results hidden">
+                <div class="report-card">
+                    <div class="report-info">
+                        <p class="label">Report for</p>
+                        <p id="report-url" class="report-url"></p>
+                        <p id="report-title" class="report-title"></p>
+                        <div id="report-meta" class="report-meta"></div>
+                    </div>
+                    <div class="score-ring">
+                        <svg width="180" height="180" class="ring-svg">
+                          <circle cx="90" cy="90" r="78" fill="none" stroke-width="10" class="ring-bg" />
+                          <circle id="ring-fg" cx="90" cy="90" r="78" fill="none" stroke-width="10" stroke-linecap="round" class="ring-fg" />
+                        </svg>
+                        <div class="score-center">
+                            <span id="overall-score" class="score-number"></span>
+                            <span class="score-label">overall</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="category-bars" class="category-bars"></div>
+                <div id="category-sections"></div>
+
+                <button id="reset-btn" class="btn-outline">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                    Audit another site
+                </button>
+            </div>
+
+            <footer class="footer">built with <3 by Eugene Zavirukha at Hack Club StarDance</footer>
     </main>
+    </div>
 
-    <!-- Connecting index.html with script.js -->
     <script src="script.js"></script>
 </body>
 </html>

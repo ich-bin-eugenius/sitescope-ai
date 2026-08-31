@@ -9,7 +9,6 @@ load_dotenv()
 
 app = FastAPI()
 
-# noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # for development
@@ -49,13 +48,25 @@ def simplify_pagespeed_response(data: dict) -> dict:
         if cat.get("score") is not None
     }
 
+    # Map each audit id to the category it belongs to, so the frontend can
+    # group opportunities under the right section (Performance, SEO, etc.).
+    audit_to_category = {}
+    for cat_name, cat in categories_raw.items():
+        for ref in cat.get("auditRefs", []):
+            audit_id = ref.get("id")
+            group = ref.get("group")
+            if audit_id and group not in ("hidden", "diagnostics"):
+                audit_to_category.setdefault(audit_id, cat_name)
+
     audits = lighthouse.get("audits", {})
     opportunities = []
     for audit in audits.values():
         score = audit.get("score")
         if score is not None and score < 1:
+            audit_id = audit.get("id")
             opportunities.append({
-                "id": audit.get("id"),
+                "id": audit_id,
+                "category": audit_to_category.get(audit_id, "best-practices"),
                 "title": audit.get("title"),
                 "description": audit.get("description"),
                 "severity": score_to_severity(score),
@@ -101,6 +112,8 @@ async def audit_website(request: AuditRequest):
             detail=f"Error communicating with the PageSpeed API: {str(e)}",
         )
 
+    # Handle non-200 responses AFTER the try/except, as plain conditionals —
+    # these are HTTP status codes, not exceptions raised by httpx.
     if response.status_code == 400:
         raise HTTPException(
             status_code=400,
