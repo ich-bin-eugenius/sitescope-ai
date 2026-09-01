@@ -1,4 +1,4 @@
-DEVLOG #1 — Starting SiteScope AI
+DEVLOG #1 — Starting SiteScope AI - 26.8.2026
 
 Today I discovered Stardance by Hack Club, and it finally gave me the motivation to start a project I've wanted to build for a while: SiteScope AI.
 The idea is to build an AI-powered website auditor that can analyze websites and provide useful insights and recommendations.

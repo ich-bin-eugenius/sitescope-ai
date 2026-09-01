@@ -1,4 +1,4 @@
-DEVLOG #3 — Parsing, Error Handling & First Frontend
+DEVLOG #3 — Parsing, Error Handling & First Frontend - 28.8.2026
 
 After getting the first working PageSpeed API integration in the previous devlog, today I focused on making the backend more useful and reliable.
 

@@ -1,4 +1,4 @@
-# DEVLOG #4 — Frontend ↔ Backend Connection
+# DEVLOG #4 — Frontend ↔ Backend Connection - 29.8.2026
 
 Today I continued building the basic frontend structure and connected it to the backend.
 
