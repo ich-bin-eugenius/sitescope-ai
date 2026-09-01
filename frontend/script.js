@@ -39,10 +39,20 @@ const resetBtn = document.getElementById("reset-btn");
 
 let scanning = false;
 
+const HTTP_PREFIX = /^https?:\/\//i;
+const DOMAIN_PATTERN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
+
 function normalizeUrl(raw) {
   let url = raw.trim();
-  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-  return new URL(url).toString(); // throws on invalid input
+  if (!HTTP_PREFIX.test(url)) url = "https://" + url;
+
+  const parsed = new URL(url); // throws on malformed input
+
+  if (!DOMAIN_PATTERN.test(parsed.hostname)) {
+    throw new Error("not a real domain");
+  }
+
+  return parsed.toString();
 }
 
 function scoreClass(score) {
