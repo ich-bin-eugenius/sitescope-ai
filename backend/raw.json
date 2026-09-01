@@ -1,0 +1,59 @@
+{
+    "lighthouseResult": {
+        "categories": {
+            "performance": {
+                "score": 0.74,
+                "auditRefs": [
+                    {"id": "unused-javascript", "group": "load-opportunities"},
+                    {"id": "render-blocking-resources", "group": "load-opportunities"}
+                ]
+            },
+            "seo": {
+                "score": 0.91,
+                "auditRefs": [
+                    {"id": "meta-description", "group": "seo-content"}
+                ]
+            },
+            "accessibility": {
+                "score": 0.87,
+                "auditRefs": [
+                    {"id": "landmark-one-main", "group": "a11y-navigation"}
+                ]
+            },
+            "best-practices": {
+                "score": 0.96,
+                "auditRefs": []
+            }
+        },
+        "audits": {
+            "unused-javascript": {
+                "id": "unused-javascript",
+                "title": "Reduce unused JavaScript",
+                "description": "Reduce unused JavaScript...",
+                "score": 0.4,
+                "displayValue": "Est savings of 73 KiB"
+            },
+            "render-blocking-resources": {
+                "id": "render-blocking-resources",
+                "title": "Eliminate render-blocking resources",
+                "description": "Javascript and CSS are blocking rendering",
+                "score": 0.5,
+                "displayValue": "150 ms"
+            },
+            "meta-description": {
+                "id": "meta-description",
+                "title": "Document does not have a meta description",
+                "description": "Meta descriptions may be included in search results.",
+                "score": 0.0,
+                "displayValue": null
+            },
+            "landmark-one-main": {
+                "id": "landmark-one-main",
+                "title": "Document does not have a main landmark.",
+                "description": "One main landmark helps screen reader users.",
+                "score": 0.0,
+                "displayValue": null
+            }
+        }
+    }
+}
