@@ -1,4 +1,4 @@
-# Devlog 7 — Phase 1 edge-case testing 1.9.2026
+# Devlog 7 — Phase 1 edge-case testing & AI prompt - 1.9.2026
 
 Tested the audit flow against a range of inputs to close out Phase 1's error-handling checklist item.
 
@@ -13,4 +13,7 @@ Tested the audit flow against a range of inputs to close out Phase 1's error-han
 
 **Fix**
 Added a hostname pattern check in `normalizeUrl()` (frontend) that requires at least one dot and only valid domain characters before a request is ever sent. Invalid-looking input now fails instantly with "That doesn't look like a valid URL," no backend call, no wasted quota.
-Phase 1 checklist is now fully closed. Moving on to Phase 2 — drafting the AI prompt.
+Phase 1 checklist is now fully closed. Moving on to Phase 2 - drafting the AI prompt.
+
+I also started Phase 2 by creating and testing the Gemini AI prompt that turns technical audit data into simple explanations,
+why each issue matters, and how to fix it. The first results are looking pretty promising!
