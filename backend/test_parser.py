@@ -7,7 +7,7 @@ from main import simplify_pagespeed_response
 
 load_dotenv()
 
-# Initialize the Gemini client (expects GEMINI_API_KEY environment variable)
+# Initialize the Gemini client
 client = genai.Client()
 
 

@@ -5,7 +5,7 @@
     --foreground: oklch(0.93 0.02 170);
     --card: oklch(0.18 0.035 225);
     --card-foreground: oklch(0.93 0.02 170);
-    --primary: oklch(0.84 0.17 165);
+    --primary: oklch(0.80 0.18 70);
     --primary-foreground: oklch(0.14 0.03 230);
     --muted: oklch(0.22 0.03 220);
     --muted-foreground: oklch(0.62 0.04 200);
@@ -30,19 +30,11 @@ body {
 
 /* Layout */
 .page {
-    position: relative;
-    min-height: 100vh;
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 44px 44px;
+    background-image: none;
 }
 
 .overlay {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at top, transparent 0%, var(--background) 75%);
+    display: none;
 }
 
 .container {
@@ -78,7 +70,7 @@ body {
 }
 @media (min-width: 640px) { .title { font-size: 3.75rem; } }
 
-.text-glow { text-shadow: 0 0 24px color-mix(in oklab, var(--primary) 55%, transparent); }
+.text-glow { text-shadow: none; }
 .text-primary { color: var(--primary); }
 
 .subtitle {
