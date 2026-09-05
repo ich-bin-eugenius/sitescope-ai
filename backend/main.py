@@ -10,7 +10,7 @@ from google.genai import types
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(root_path="")
 
 # noinspection PyTypeChecker
 app.add_middleware(
