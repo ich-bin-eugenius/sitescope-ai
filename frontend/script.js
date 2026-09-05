@@ -3,7 +3,7 @@
  * PageSpeed/Lighthouse scores and findings.
  */
 
-const API_URL = "http://localhost:8000/api/audit";
+const API_URL = "https://sitescope-ai.hackclub.app/api/audit";
 
 const SCAN_LINES = [
   "resolving host…",
