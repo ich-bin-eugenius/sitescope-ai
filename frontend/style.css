@@ -11,6 +11,7 @@
     --muted-foreground: oklch(0.62 0.04 200);
     --destructive: oklch(0.65 0.22 25);
     --warning: oklch(0.82 0.16 85);
+    --warning: oklch(0.82 0.16 85);
     --success: oklch(0.84 0.17 165);
     --border: oklch(0.28 0.035 215);
     --input: oklch(0.28 0.035 215);
@@ -449,6 +450,14 @@ body {
   font-size: 0.75rem;
   color: color-mix(in oklab, var(--muted-foreground) 60%, transparent);
 }
+
+.footer-links {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+.footer-links a { color: var(--primary); text-decoration: none; }
 
 .hidden { display: none !important; }
 
