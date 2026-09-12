@@ -6,7 +6,11 @@ from pydantic import BaseModel, HttpUrl
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
-from google.genai import types
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+_executor = ThreadPoolExecutor(max_workers=4)
+AI_TIMEOUT_SECONDS = 20.0
 
 load_dotenv()
 
@@ -91,41 +95,43 @@ def generate_ai_explanations(opportunities: list) -> list:
 
     prompt_path = os.path.join(os.path.dirname(__file__), "prompt.txt")
     if not os.path.exists(prompt_path):
-        # Fallback if prompt.txt is in root instead of backend/
         prompt_path = "prompt.txt"
 
-    try:
-        with open(prompt_path, "r", encoding="utf-8") as f:
-            prompt_template = f.read()
-    except FileNotFoundError:
-        # Fallback inline prompt if file is missing completely
-        prompt_template = (
-            "You are a web dev expert. For each issue in this JSON provide "
-            "explanation, why_it_matters, how_to_fix. Return ONLY a JSON array "
-            "with id, explanation, why_it_matters, how_to_fix.\n{json_data}"
-        )
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        prompt_template = f.read()
 
     prompt = prompt_template.format(json_data=json.dumps(opportunities, indent=2))
 
+    response = gemini_client.models.generate_content(
+        model='gemini-3.6-flash',
+        contents=prompt,
+    )
+
+    response_text = response.text.strip()
+    if response_text.startswith("```json"):
+        response_text = response_text[7:]
+    if response_text.startswith("```"):
+        response_text = response_text[3:]
+    if response_text.endswith("```"):
+        response_text = response_text[:-3]
+    response_text = response_text.strip()
+
+    return json.loads(response_text)
+
+
+async def generate_ai_explanations_async(opportunities: list) -> list:
+    """Runs the blocking Gemini call in a thread, so it can't freeze the
+    whole FastAPI event loop, and gives up after AI_TIMEOUT_SECONDS so a
+    slow/rate-limited AI call can't hang the whole audit."""
+    loop = asyncio.get_event_loop()
     try:
-        response = gemini_client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.2,
-            )
+        return await asyncio.wait_for(
+            loop.run_in_executor(_executor, generate_ai_explanations, opportunities),
+            timeout=AI_TIMEOUT_SECONDS,
         )
-
-        response_text = response.text.strip()
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        if response_text.startswith("```"):
-            response_text = response_text[3:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
-        response_text = response_text.strip()
-
-        return json.loads(response_text)
+    except asyncio.TimeoutError:
+        print(f"Warning: AI explanation generation timed out after {AI_TIMEOUT_SECONDS}s")
+        return []
     except Exception as e:
         print(f"Warning: AI explanation generation failed: {e}")
         return []
@@ -191,7 +197,7 @@ async def audit_website(request: AuditRequest):
     result = simplify_pagespeed_response(data)
     opportunities = result["opportunities"]
 
-    ai_explanations = generate_ai_explanations(opportunities)
+    ai_explanations = await generate_ai_explanations_async(opportunities)
 
     ai_map = {item["id"]: item for item in ai_explanations if "id" in item}
 
