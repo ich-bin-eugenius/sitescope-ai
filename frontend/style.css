@@ -378,6 +378,17 @@ body {
 .finding .icon { margin-top: 0.15rem; }
 .finding-title { margin: 0; font-size: 0.875rem; font-weight: 600; }
 .finding-detail { margin: 0.15rem 0 0; font-size: 0.75rem; color: var(--muted-foreground); }
+.finding-why,
+.finding-fix {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.finding-why strong,
+.finding-fix strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
 
 /* Score colors */
 .score-good { color: var(--success); }

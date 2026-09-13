@@ -1,6 +1,6 @@
 /* SiteScope AI — frontend for the SiteScope AI FastAPI backend
  * Sends the target URL to /api/audit and renders the returned
- * PageSpeed/Lighthouse scores and findings.
+ * PageSpeed/Lighthouse scores and AI-generated explanations.
  */
 
 const API_URL = "https://sitescope-ai.hackclub.app/api/audit";
@@ -108,14 +108,21 @@ function buildCategories(data) {
     const findings = (byCategory[id] || []).map((opp) => ({
       severity: severityToIcon(opp.severity),
       title: opp.title,
-      detail: opp.displayValue || opp.description,
+      // "explanation" is the AI-generated plain-language version; if the
+      // AI call failed or timed out, the backend already falls back to
+      // the raw Lighthouse description, so this is always populated.
+      explanation: opp.explanation || opp.description,
+      whyItMatters: opp.why_it_matters,
+      howToFix: opp.how_to_fix,
     }));
 
     if (findings.length === 0) {
       findings.push({
         severity: "pass",
         title: "No issues found",
-        detail: "Lighthouse didn't flag anything in this category.",
+        explanation: "Lighthouse didn't flag anything in this category.",
+        whyItMatters: null,
+        howToFix: null,
       });
     }
 
@@ -208,7 +215,9 @@ function renderResults(data) {
             ${ICONS[f.severity]}
             <div>
               <p class="finding-title">${escapeHtml(f.title)}</p>
-              <p class="finding-detail">${escapeHtml(f.detail)}</p>
+              <p class="finding-detail">${escapeHtml(f.explanation)}</p>
+              ${f.whyItMatters ? `<p class="finding-why"><strong>Why it matters:</strong> ${escapeHtml(f.whyItMatters)}</p>` : ""}
+              ${f.howToFix ? `<p class="finding-fix"><strong>How to fix:</strong> ${escapeHtml(f.howToFix)}</p>` : ""}
             </div>
           </li>`
           )

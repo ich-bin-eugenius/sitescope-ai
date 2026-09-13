@@ -140,6 +140,7 @@ ENV/
 env.bak/
 venv.bak/
 notes-developer.txt
+first-ship
 
 # Spyder project settings
 .spyderproject

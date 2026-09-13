@@ -7,6 +7,8 @@ SiteScope AI is an open-source web app that audits any website's performance, SE
 Hi! If you came here from Stardance, thanks for trying it out, and I'd really appreciate a rating. 🙂
 
 ![SiteScope AI screenshot](./devlogs/10/35.png)
+![SiteScope AI screenshot](./devlogs/10/36.png)
+![SiteScope AI screenshot](./devlogs/10/37.png)
 
 ## Why I built this
 
