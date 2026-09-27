@@ -1,52 +1,49 @@
-/* SiteScope AI — frontend for the SiteScope AI FastAPI backend
- * Sends the target URL to /api/audit and renders the returned
- * PageSpeed/Lighthouse scores and AI-generated explanations.
- */
-
 const API_URL = "https://sitescope-ai.hackclub.app/api/audit";
 
 const SCAN_LINES = [
-  "resolving host…",
+  "revolving host…",
   "requesting PageSpeed audit…",
   "running Lighthouse…",
   "scoring performance…",
   "scoring SEO…",
   "scoring accessibility…",
-  "compiling report…",
+  "compiling report…"
 ];
 
 const CATEGORY_LABELS = {
   performance: "Performance",
   seo: "SEO",
   accessibility: "Accessibility",
-  "best-practices": "Best Practices",
+  "best-practices": "Best Practices"
 };
 
 const ICONS = {
-  pass: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>',
-  warn: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
-  fail: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+  pass: '<img src="svg/pass.svg" alt="world" height="23" width="23" />',
+  warn: '<img src="svg/warn.svg" alt="world" height="23" width="23" />',
+  fail: '<img src="svg/fail.svg" alt="world" height="23" width="23" />'
 };
 
-const form = document.getElementById("audit-form");
-const urlInput = document.getElementById("url-input");
-const submitBtn = document.getElementById("submit-btn");
-const errorEl = document.getElementById("error");
-const scanningEl = document.getElementById("scanning");
-const scanLinesEl = document.getElementById("scan-lines");
-const resultsEl = document.getElementById("results");
-const resetBtn = document.getElementById("reset-btn");
+var form = document.getElementById("audit-form");
+var urlInput = document.getElementById("url-input");
+var submitBtn = document.getElementById("submit-btn");
+var errorEl = document.getElementById("error");
+var scanningEl = document.getElementById("scanning");
+var scanLinesEl = document.getElementById("scan-lines");
+var resultsEl = document.getElementById("results");
+var resetBtn = document.getElementById("reset-btn");
 
-let scanning = false;
+var scanning = false;
 
-const HTTP_PREFIX = /^https?:\/\//i;
-const DOMAIN_PATTERN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
+var HTTP_PREFIX = /^https?:\/\//i;
+var DOMAIN_PATTERN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
 
 function normalizeUrl(raw) {
-  let url = raw.trim();
-  if (!HTTP_PREFIX.test(url)) url = "https://" + url;
+  var url = raw.trim();
+  if (!HTTP_PREFIX.test(url)) {
+    url = "https://" + url;
+  }
 
-  const parsed = new URL(url); // throws on malformed input
+  var parsed = new URL(url);
 
   if (!DOMAIN_PATTERN.test(parsed.hostname)) {
     throw new Error("not a real domain");
@@ -56,65 +53,89 @@ function normalizeUrl(raw) {
 }
 
 function scoreClass(score) {
-  if (score >= 80) return "good";
-  if (score >= 50) return "ok";
+  if (score >= 80) {
+    return "good";
+  }
+  if (score >= 50) {
+    return "ok";
+  }
   return "bad";
 }
 
 function severityToIcon(severity) {
-  if (severity === "critical") return "fail";
-  return "warn"; // "warning" and "minor" both get a caution icon — they're still real findings
+  if (severity === "critical") {
+    return "fail";
+  }
+  return "warn";
 }
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (ch) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]
-  );
+  return String(str).replace(/[&<>"']/g, function(ch) {
+    var map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+    return map[ch];
+  });
 }
 
-/* ---------- Audit logic ---------- */
-
 async function runAudit(url) {
-  const response = await fetch(API_URL, {
+  var response = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url: url }),
   });
 
-  const data = await response.json();
+  var data = await response.json();
 
   if (!response.ok) {
-    // FastAPI's HTTPException puts the message in "detail" (a string, or
-    // an array of validation errors for 422 responses).
-    const message = Array.isArray(data.detail)
-      ? data.detail.map((d) => d.msg).join(", ")
-      : data.detail || "The server returned an unknown error.";
-    throw new Error(message);
+    var msg = "The server returned an unknown error.";
+    if (Array.isArray(data.detail)) {
+      var messages = [];
+      for (var i = 0; i < data.detail.length; i++) {
+        messages.push(data.detail[i].msg);
+      }
+      msg = messages.join(", ");
+    } else if (data.detail) {
+      msg = data.detail;
+    }
+    throw new Error(msg);
   }
 
   return data;
 }
 
 function buildCategories(data) {
-  // Group the flat opportunities list by category so each score section
-  // gets its own findings underneath it.
-  const byCategory = {};
-  for (const opp of data.opportunities) {
-    const cat = opp.category || "best-practices";
-    (byCategory[cat] ||= []).push(opp);
+  var byCategory = {};
+
+  for (var i = 0; i < data.opportunities.length; i++) {
+    var opp = data.opportunities[i];
+    var cat = opp.category;
+    if (!cat) {
+      cat = "best-practices";
+    }
+    if (!byCategory[cat]) {
+      byCategory[cat] = [];
+    }
+    byCategory[cat].push(opp);
   }
 
-  return Object.entries(data.scores).map(([id, score]) => {
-    const findings = (byCategory[id] || []).map((opp) => ({
-      severity: severityToIcon(opp.severity),
-      title: opp.title,
-      // "explanation" is the AI-generated plain-language version; if the
-      // AI call failed or timed out, the backend already falls back to
-      // the raw Lighthouse description, so this is always populated.
-      explanation: opp.explanation || opp.description,
-      whyItMatters: opp.why_it_matters,
-      howToFix: opp.how_to_fix,
-    }));
+  var scoreKeys = Object.keys(data.scores);
+  var result = [];
+
+  for (var j = 0; j < scoreKeys.length; j++) {
+    var id = scoreKeys[j];
+    var score = data.scores[id];
+    var rawFindings = byCategory[id] || [];
+    var findings = [];
+
+    for (var k = 0; k < rawFindings.length; k++) {
+      var item = rawFindings[k];
+      findings.push({
+        severity: severityToIcon(item.severity),
+        title: item.title,
+        explanation: item.explanation || item.description,
+        whyItMatters: item.why_it_matters,
+        howToFix: item.how_to_fix,
+      });
+    }
 
     if (findings.length === 0) {
       findings.push({
@@ -126,117 +147,143 @@ function buildCategories(data) {
       });
     }
 
-    return { id, label: CATEGORY_LABELS[id] || id, score, findings };
-  });
-}
+    var label = CATEGORY_LABELS[id];
+    if (!label) {
+      label = id;
+    }
 
-/* ---------- Rendering ---------- */
+    result.push({ id: id, label: label, score: score, findings: findings });
+  }
+
+  return result;
+}
 
 function showScanLines() {
   scanLinesEl.innerHTML = "";
-  let i = 0;
-  const render = () => {
-    scanLinesEl.innerHTML = SCAN_LINES.slice(0, i + 1)
-      .map(
-        (line, idx) =>
-          `<p><span class="prompt">&gt;</span> ${line}${idx === i ? '<span class="cursor"></span>' : ""}</p>`
-      )
-      .join("");
-  };
+  var i = 0;
+
+  function render() {
+    var html = "";
+    for (var j = 0; j <= i; j++) {
+      var isCurrent = (j === i);
+      var cursorHtml = isCurrent ? '<span class="cursor"></span>' : "";
+      html += '<p><span class="prompt">&gt;</span> ' + SCAN_LINES[j] + cursorHtml + '</p>';
+    }
+    scanLinesEl.innerHTML = html;
+  }
+
   render();
-  return setInterval(() => {
-    i = Math.min(i + 1, SCAN_LINES.length - 1);
+
+  return setInterval(function() {
+    if (i < SCAN_LINES.length - 1) {
+      i++;
+    }
     render();
   }, 450);
 }
 
 function renderResults(data) {
-  const categories = buildCategories(data);
-  const overallScore = Math.round(
-    categories.reduce((sum, c) => sum + c.score, 0) / categories.length
-  );
+  var categories = buildCategories(data);
+  var scoreSum = 0;
+  for (var i = 0; i < categories.length; i++) {
+    scoreSum += categories[i].score;
+  }
+  var overallScore = Math.round(scoreSum / categories.length);
 
   document.getElementById("report-url").textContent = data.url;
   document.getElementById("report-title").textContent = "";
   document.getElementById("report-meta").innerHTML = "";
 
-  // Score ring
-  const cls = scoreClass(overallScore);
-  const circumference = 2 * Math.PI * 78;
-  const offset = circumference * (1 - overallScore / 100);
-  const ring = document.getElementById("ring-fg");
+  var cls = scoreClass(overallScore);
+  var circumference = 2 * Math.PI * 78;
+  var offset = circumference * (1 - overallScore / 100);
+  var ring = document.getElementById("ring-fg");
+
   ring.setAttribute("stroke-dasharray", circumference);
   ring.className.baseVal = "ring-fg stroke-" + cls;
-  const scoreEl = document.getElementById("overall-score");
+
+  var scoreEl = document.getElementById("overall-score");
   scoreEl.textContent = overallScore;
   scoreEl.className = "score-number score-" + cls;
-  ring.style.strokeDashoffset = circumference;
-  requestAnimationFrame(() =>
-    requestAnimationFrame(() => (ring.style.strokeDashoffset = offset))
-  );
 
-  // Category bars
-  const bars = document.getElementById("category-bars");
+  ring.style.strokeDashoffset = circumference;
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      ring.style.strokeDashoffset = offset;
+    });
+  });
+
+  var bars = document.getElementById("category-bars");
   bars.innerHTML = "";
-  for (const c of categories) {
-    const cc = scoreClass(c.score);
-    const div = document.createElement("div");
+
+  for (var c = 0; c < categories.length; c++) {
+    var catItem = categories[c];
+    var cc = scoreClass(catItem.score);
+    var div = document.createElement("div");
     div.className = "cat-bar";
-    div.innerHTML = `
-      <div class="cat-bar-head">
-        <span class="cat-bar-name">${c.label}</span>
-        <span class="cat-bar-score score-${cc}">${c.score}</span>
-      </div>
-      <div class="cat-bar-track"><div class="cat-bar-fill fill-${cc}" data-score="${c.score}"></div></div>`;
+    div.innerHTML =
+      '<div class="cat-bar-head">' +
+        '<span class="cat-bar-name">' + catItem.label + '</span>' +
+        '<span class="cat-bar-score score-' + cc + '">' + catItem.score + '</span>' +
+      '</div>' +
+      '<div class="cat-bar-track"><div class="cat-bar-fill fill-' + cc + '" data-score="' + catItem.score + '"></div></div>';
     bars.appendChild(div);
   }
-  requestAnimationFrame(() =>
-    requestAnimationFrame(() =>
-      bars.querySelectorAll(".cat-bar-fill").forEach((el) => {
-        el.style.width = el.dataset.score + "%";
-      })
-    )
-  );
 
-  // Findings sections
-  const sections = document.getElementById("category-sections");
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      var fills = bars.querySelectorAll(".cat-bar-fill");
+      for (var f = 0; f < fills.length; f++) {
+        fills[f].style.width = fills[f].getAttribute("data-score") + "%";
+      }
+    });
+  });
+
+  var sections = document.getElementById("category-sections");
   sections.innerHTML = "";
-  for (const c of categories) {
-    const cc = scoreClass(c.score);
-    const section = document.createElement("section");
+
+  for (var s = 0; s < categories.length; s++) {
+    var secItem = categories[s];
+    var sCls = scoreClass(secItem.score);
+    var section = document.createElement("section");
     section.className = "cat-section";
-    section.innerHTML = `
-      <h2>${c.label}<span class="cat-section-score score-${cc}">${c.score}/100</span></h2>
-      <ul class="findings">
-        ${c.findings
-          .map(
-            (f) => `
-          <li class="finding">
-            ${ICONS[f.severity]}
-            <div>
-              <p class="finding-title">${escapeHtml(f.title)}</p>
-              <p class="finding-detail">${escapeHtml(f.explanation)}</p>
-              ${f.whyItMatters ? `<p class="finding-why"><strong>Why it matters:</strong> ${escapeHtml(f.whyItMatters)}</p>` : ""}
-              ${f.howToFix ? `<p class="finding-fix"><strong>How to fix:</strong> ${escapeHtml(f.howToFix)}</p>` : ""}
-            </div>
-          </li>`
-          )
-          .join("")}
-      </ul>`;
+
+    var findingsHtml = "";
+    for (var fn = 0; fn < secItem.findings.length; fn++) {
+      var finding = secItem.findings[fn];
+      var whyHtml = finding.whyItMatters ? '<p class="finding-why"><strong>Why it matters:</strong> ' + escapeHtml(finding.whyItMatters) + '</p>' : "";
+      var fixHtml = finding.howToFix ? '<p class="finding-fix"><strong>How to fix:</strong> ' + escapeHtml(finding.howToFix) + '</p>' : "";
+
+      findingsHtml +=
+        '<li class="finding">' +
+          ICONS[finding.severity] +
+          '<div>' +
+            '<p class="finding-title">' + escapeHtml(finding.title) + '</p>' +
+            '<p class="finding-detail">' + escapeHtml(finding.explanation) + '</p>' +
+            whyHtml +
+            fixHtml +
+          '</div>' +
+        '</li>';
+    }
+
+    section.innerHTML =
+      '<h2>' + secItem.label + '<span class="cat-section-score score-' + sCls + '">' + secItem.score + '/100</span></h2>' +
+      '<ul class="findings">' + findingsHtml + '</ul>';
+
     sections.appendChild(section);
   }
 }
 
-/* ---------- Flow ---------- */
-
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async function(e) {
   e.preventDefault();
-  if (scanning) return;
+  if (scanning) {
+    return;
+  }
 
-  let url;
+  var url;
   try {
     url = normalizeUrl(urlInput.value);
-  } catch {
+  } catch (err) {
     errorEl.textContent = "That doesn't look like a valid URL.";
     errorEl.classList.remove("hidden");
     return;
@@ -249,10 +296,11 @@ form.addEventListener("submit", async (e) => {
   errorEl.classList.add("hidden");
   resultsEl.classList.add("hidden");
   scanningEl.classList.remove("hidden");
-  const ticker = showScanLines();
+
+  var ticker = showScanLines();
 
   try {
-    const data = await runAudit(url);
+    var data = await runAudit(url);
     renderResults(data);
     scanningEl.classList.add("hidden");
     resultsEl.classList.remove("hidden");
@@ -269,7 +317,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-resetBtn.addEventListener("click", () => {
+resetBtn.addEventListener("click", function() {
   resultsEl.classList.add("hidden");
   urlInput.value = "";
   urlInput.focus();
