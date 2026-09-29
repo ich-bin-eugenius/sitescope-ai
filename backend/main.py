@@ -30,7 +30,6 @@ PAGESPEED_URL = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 
 CATEGORIES = ["performance", "seo", "accessibility", "best-practices"]
 
-# Initialize the Gemini client (expects GEMINI_API_KEY in environment)
 gemini_client = genai.Client()
 
 
@@ -220,4 +219,4 @@ async def audit_website(request: AuditRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)  # False for debug session

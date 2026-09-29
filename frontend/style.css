@@ -203,7 +203,6 @@ input {
     font-family: "JetBrains Mono", monospace;
     font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
     color: #94a3b8;
 }
 
@@ -241,8 +240,8 @@ input {
 /* score ring */
 .score-ring {
     position: relative;
-    width: 160px;
-    height: 160px;
+    width: 180px;
+    height: 180px;
     flex-shrink: 0;
 }
 
@@ -271,6 +270,7 @@ input {
     font-family: "JetBrains Mono", monospace;
     font-size: 40px;
     font-weight: 700;
+    display: center;
 }
 
 .score-label {
@@ -316,7 +316,7 @@ input {
 
 .cat-bar-track {
     height: 4px;
-    margin-top: 192px;
+    margin-top: 12px;
     border-radius: 2px;
     background: #262a33;
 }
@@ -362,7 +362,6 @@ input {
     padding: 12px 16px;
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
     gap: 12px;
     border: 1px solid #262a33;
     border-radius: 6px;
@@ -424,7 +423,6 @@ input {
   margin: 24px 0 0;
   font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.05em;
   color: #ffa500;
 }
 .about-heading:first-child { margin-top: 0; }
